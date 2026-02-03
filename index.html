@@ -3,272 +3,106 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Roulette Simulator</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #0d1117;
-      --panel: #161b22;
-      --accent: #2f81f7;
-      --red: #e63946;
-      --black: #1f2937;
-      --green: #2ecc71;
-      --text: #f0f6fc;
-      --muted: #8b949e;
-      font-family: "Segoe UI", system-ui, sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #1b2735, var(--bg));
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 32px 16px;
-    }
-
-    .app {
-      max-width: 960px;
-      width: 100%;
-      background: var(--panel);
-      border-radius: 20px;
-      padding: 32px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-      display: grid;
-      gap: 24px;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
-
-    header {
-      grid-column: 1 / -1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(1.8rem, 2.4vw, 2.4rem);
-    }
-
-    p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .wheel {
-      position: relative;
-      border-radius: 50%;
-      width: min(340px, 90vw);
-      aspect-ratio: 1;
-      margin: 0 auto;
-      background: conic-gradient(
-        #2ecc71 0deg 9.729deg,
-        #1f2937 9.729deg 19.459deg,
-        #e63946 19.459deg 29.189deg,
-        #1f2937 29.189deg 38.919deg,
-        #e63946 38.919deg 48.649deg,
-        #1f2937 48.649deg 58.378deg,
-        #e63946 58.378deg 68.108deg,
-        #1f2937 68.108deg 77.838deg,
-        #e63946 77.838deg 87.568deg,
-        #1f2937 87.568deg 97.297deg,
-        #e63946 97.297deg 107.027deg,
-        #1f2937 107.027deg 116.757deg,
-        #e63946 116.757deg 126.486deg,
-        #1f2937 126.486deg 136.216deg,
-        #e63946 136.216deg 145.946deg,
-        #1f2937 145.946deg 155.676deg,
-        #e63946 155.676deg 165.405deg,
-        #1f2937 165.405deg 175.135deg,
-        #e63946 175.135deg 184.865deg,
-        #1f2937 184.865deg 194.595deg,
-        #e63946 194.595deg 204.324deg,
-        #1f2937 204.324deg 214.054deg,
-        #e63946 214.054deg 223.784deg,
-        #1f2937 223.784deg 233.514deg,
-        #e63946 233.514deg 243.243deg,
-        #1f2937 243.243deg 252.973deg,
-        #e63946 252.973deg 262.703deg,
-        #1f2937 262.703deg 272.432deg,
-        #e63946 272.432deg 282.162deg,
-        #1f2937 282.162deg 291.892deg,
-        #e63946 291.892deg 301.622deg,
-        #1f2937 301.622deg 311.351deg,
-        #e63946 311.351deg 321.081deg,
-        #1f2937 321.081deg 330.811deg,
-        #e63946 330.811deg 340.541deg,
-        #1f2937 340.541deg 350.27deg,
-        #e63946 350.27deg 360deg
-      );
-      border: 8px solid #0b0f14;
-    }
-
-    .wheel::after {
-      content: "";
-      position: absolute;
-      inset: 15%;
-      border-radius: 50%;
-      background: #0b0f14;
-      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
-    }
-
-    .pointer {
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 12px solid transparent;
-      border-right: 12px solid transparent;
-      border-bottom: 18px solid var(--accent);
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
-    }
-
-    .ball {
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #f4d35e;
-      box-shadow: 0 0 6px rgba(244, 211, 94, 0.8);
-      top: 10%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      transition: transform 1.5s ease-out;
-    }
-
-    .panel {
-      background: #0f141b;
-      border-radius: 16px;
-      padding: 20px;
-      display: grid;
-      gap: 16px;
-    }
-
-    .result {
-      font-size: 2.2rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .chip {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    button {
-      border: none;
-      background: var(--accent);
-      color: white;
-      font-size: 1rem;
-      padding: 12px 18px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    button:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 14px rgba(47, 129, 247, 0.3);
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-    }
-
-    .stat {
-      background: #111827;
-      border-radius: 12px;
-      padding: 12px;
-      display: grid;
-      gap: 6px;
-      font-size: 0.95rem;
-    }
-
-    .stat span {
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-
-    .history {
-      max-height: 160px;
-      overflow: auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .history .chip {
-      width: 28px;
-      height: 28px;
-      font-size: 0.75rem;
-    }
-
-    .note {
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-  </style>
+  <title>Roulette Simulator - Cash & Sharks</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main class="app">
-    <header>
-      <h1>Roulette Simulator</h1>
-      <p>European single-zero wheel with 37 pockets. Each spin is a true 1/37 random outcome to model casino odds as accurately as possible.</p>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">European single-zero wheel</p>
+        <h1>Roulette Simulator</h1>
+        <p class="subhead">
+          Spin with accurate 1/37 odds, track bankroll swings, and manage the loan shark on your tail.
+        </p>
+      </div>
+      <div class="bankroll">
+        <div>
+          <span class="label">Balance</span>
+          <strong id="balance">$1,000</strong>
+        </div>
+        <div>
+          <span class="label">Debt</span>
+          <strong id="debt">$0</strong>
+        </div>
+        <div>
+          <span class="label">Net</span>
+          <strong id="net">$1,000</strong>
+        </div>
+      </div>
     </header>
 
-    <section aria-label="Roulette wheel">
+    <section class="wheel-section" aria-label="Roulette wheel">
       <div class="wheel" id="wheel">
         <div class="pointer"></div>
         <div class="ball" id="ball"></div>
+        <div class="wheel-center"></div>
       </div>
-    </section>
-
-    <section class="panel" aria-label="Controls and results">
       <div class="result" id="result">
         <div class="chip" id="result-chip">0</div>
         <div>
-          <div id="result-text">Ready to spin</div>
-          <div class="note" id="result-note">Press spin to start.</div>
+          <div class="result-text" id="result-text">Ready to spin</div>
+          <div class="note" id="result-note">Place a bet to get started.</div>
         </div>
       </div>
+    </section>
 
+    <section class="panel controls-panel" aria-label="Controls and betting">
       <div class="controls">
         <button id="spin">Spin the wheel</button>
-        <button id="reset">Reset stats</button>
+        <button class="ghost" id="reset">Reset stats</button>
+        <label class="toggle">
+          <input type="checkbox" id="auto-spin" />
+          <span>Auto spin</span>
+        </label>
       </div>
 
+      <div class="betting">
+        <div class="bet-block">
+          <span class="label">Bet amount</span>
+          <div class="bet-row">
+            <input type="number" id="bet-amount" min="1" value="25" />
+            <button class="ghost" data-bet="10">+10</button>
+            <button class="ghost" data-bet="50">+50</button>
+            <button class="ghost" id="max-bet">Max</button>
+          </div>
+        </div>
+
+        <div class="bet-block">
+          <span class="label">Bet type</span>
+          <div class="bet-row">
+            <label class="radio">
+              <input type="radio" name="bet-type" value="color" checked />
+              <span>Color (1:1)</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="bet-type" value="number" />
+              <span>Straight (35:1)</span>
+            </label>
+          </div>
+          <div class="bet-row">
+            <div class="color-picks">
+              <button class="chip red" data-color="red">Red</button>
+              <button class="chip black" data-color="black">Black</button>
+            </div>
+            <select id="number-pick" aria-label="Pick a number">
+              <option value="0">0</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="bet-block">
+          <span class="label">Loan shark</span>
+          <div class="bet-row">
+            <button class="ghost" id="borrow">Borrow $500</button>
+            <button class="ghost" id="repay">Repay $250</button>
+          </div>
+          <p class="note">Interest compounds 10% every 5 spins. Keep the shark happy.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel stats-panel" aria-label="Stats and history">
       <div class="stats">
         <div class="stat">
           <strong id="spins">0</strong>
@@ -288,160 +122,19 @@
         </div>
       </div>
 
-      <div>
-        <div class="note">Recent results</div>
-        <div class="history" id="history"></div>
+      <div class="history-wrap">
+        <div>
+          <span class="label">Recent results</span>
+          <div class="history" id="history"></div>
+        </div>
+        <div>
+          <span class="label">Cash flow</span>
+          <div class="ledger" id="ledger"></div>
+        </div>
       </div>
     </section>
   </main>
 
-  <script>
-    const pockets = [
-      { number: 0, color: "green" },
-      { number: 32, color: "red" },
-      { number: 15, color: "black" },
-      { number: 19, color: "red" },
-      { number: 4, color: "black" },
-      { number: 21, color: "red" },
-      { number: 2, color: "black" },
-      { number: 25, color: "red" },
-      { number: 17, color: "black" },
-      { number: 34, color: "red" },
-      { number: 6, color: "black" },
-      { number: 27, color: "red" },
-      { number: 13, color: "black" },
-      { number: 36, color: "red" },
-      { number: 11, color: "black" },
-      { number: 30, color: "red" },
-      { number: 8, color: "black" },
-      { number: 23, color: "red" },
-      { number: 10, color: "black" },
-      { number: 5, color: "red" },
-      { number: 24, color: "black" },
-      { number: 16, color: "red" },
-      { number: 33, color: "black" },
-      { number: 1, color: "red" },
-      { number: 20, color: "black" },
-      { number: 14, color: "red" },
-      { number: 31, color: "black" },
-      { number: 9, color: "red" },
-      { number: 22, color: "black" },
-      { number: 18, color: "red" },
-      { number: 29, color: "black" },
-      { number: 7, color: "red" },
-      { number: 28, color: "black" },
-      { number: 12, color: "red" },
-      { number: 35, color: "black" },
-      { number: 3, color: "red" },
-      { number: 26, color: "black" }
-    ];
-
-    const wheel = document.getElementById("wheel");
-    const ball = document.getElementById("ball");
-    const resultChip = document.getElementById("result-chip");
-    const resultText = document.getElementById("result-text");
-    const resultNote = document.getElementById("result-note");
-    const spinButton = document.getElementById("spin");
-    const resetButton = document.getElementById("reset");
-    const spinsValue = document.getElementById("spins");
-    const redPercent = document.getElementById("red-percent");
-    const blackPercent = document.getElementById("black-percent");
-    const greenPercent = document.getElementById("green-percent");
-    const historyEl = document.getElementById("history");
-
-    let spins = 0;
-    let reds = 0;
-    let blacks = 0;
-    let greens = 0;
-    let rotation = 0;
-
-    const colorMap = {
-      red: "var(--red)",
-      black: "var(--black)",
-      green: "var(--green)"
-    };
-
-    const updateStats = () => {
-      spinsValue.textContent = spins;
-      const redRatio = spins ? (reds / spins) * 100 : 0;
-      const blackRatio = spins ? (blacks / spins) * 100 : 0;
-      const greenRatio = spins ? (greens / spins) * 100 : 0;
-      redPercent.textContent = `${redRatio.toFixed(1)}%`;
-      blackPercent.textContent = `${blackRatio.toFixed(1)}%`;
-      greenPercent.textContent = `${greenRatio.toFixed(1)}%`;
-    };
-
-    const addHistory = (pocket) => {
-      const chip = document.createElement("div");
-      chip.className = "chip";
-      chip.style.background = colorMap[pocket.color];
-      chip.textContent = pocket.number;
-      historyEl.prepend(chip);
-      if (historyEl.children.length > 15) {
-        historyEl.removeChild(historyEl.lastChild);
-      }
-    };
-
-    const getRandomIndex = (max) => {
-      if (!window.crypto || !window.crypto.getRandomValues) {
-        return Math.floor(Math.random() * max);
-      }
-      const range = 0xffffffff;
-      const bucketSize = Math.floor(range / max) * max;
-      const buffer = new Uint32Array(1);
-      let value = range;
-      while (value >= bucketSize) {
-        window.crypto.getRandomValues(buffer);
-        value = buffer[0];
-      }
-      return value % max;
-    };
-
-    const spin = () => {
-      spinButton.disabled = true;
-      const index = getRandomIndex(pockets.length);
-      const pocket = pockets[index];
-
-      const degreesPerPocket = 360 / pockets.length;
-      const targetAngle = index * degreesPerPocket + degreesPerPocket / 2;
-      rotation += 720 + (360 - targetAngle);
-      wheel.style.transition = "transform 2.2s cubic-bezier(0.2, 0.8, 0.2, 1)";
-      wheel.style.transform = `rotate(${rotation}deg)`;
-
-      ball.style.transform = `translate(-50%, -50%) rotate(${rotation * -1}deg) translate(0, -140%)`;
-
-      setTimeout(() => {
-        spins += 1;
-        if (pocket.color === "red") reds += 1;
-        if (pocket.color === "black") blacks += 1;
-        if (pocket.color === "green") greens += 1;
-
-        resultChip.textContent = pocket.number;
-        resultChip.style.background = colorMap[pocket.color];
-        resultText.textContent = `Result: ${pocket.number} (${pocket.color})`;
-        resultNote.textContent = "Payout odds: 35:1 for a straight bet.";
-        addHistory(pocket);
-        updateStats();
-        spinButton.disabled = false;
-      }, 2300);
-    };
-
-    const reset = () => {
-      spins = 0;
-      reds = 0;
-      blacks = 0;
-      greens = 0;
-      updateStats();
-      historyEl.innerHTML = "";
-      resultChip.textContent = "0";
-      resultChip.style.background = colorMap.green;
-      resultText.textContent = "Ready to spin";
-      resultNote.textContent = "Press spin to start.";
-    };
-
-    spinButton.addEventListener("click", spin);
-    resetButton.addEventListener("click", reset);
-    reset();
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
